@@ -8,6 +8,11 @@ DEFAULT_EXTENSIONS = ["jpg", "jpeg", "png", "tif", "bmp", "webp", "gif", "mp4", 
                       "docx", "doc", "xlsx", "ods", "odt", "zip", "pptx", "apk", "enc", "exe", "mp3", "wav",
                       "opus", "m4a", "ipynb", "json", "csv", "tsv", "dic", "amr"]
 
+# These files are deleted in older backups because they are preventing otherwise empty folders from being
+# deleted, even though they are not really important. They signify which albums are hidden resp. shown in the
+# front of the Photos app AFAIK. They are also always empty.
+IRRELEVANT_FILES = [".outside", ".hidden"]
+
 
 def deduplicate(folder: str, dry_run=True, assume_continuity=True):
     folder = Path(folder)
@@ -109,6 +114,11 @@ def delete_empty_folders(root: Path):
             if current_dir / subdir not in deleted:
                 still_has_subdirs = True
                 break
+
+        for irrelevant_file in IRRELEVANT_FILES:
+            if irrelevant_file in files:
+                (current_dir / irrelevant_file).unlink()
+                files.remove(irrelevant_file)
 
         if not any(files) and not still_has_subdirs:
             assert not any(current_dir.iterdir()), "Supposedly empty directory still contains file or subfolder!"
