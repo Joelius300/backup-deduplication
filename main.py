@@ -14,7 +14,7 @@ def deduplicate(folder: str, dry_run=True, assume_continuity=True):
 
     # get list of sub-folders sorted descending so 2024 is before 2023 (intended for YYYY-MM-DD)
     children = [f for f in sorted(folder.iterdir(), key=lambda f: f.name, reverse=True) if
-                not f.name.endswith(".log.csv")]
+                not (f.name.endswith(".log.csv") or f.name.endswith(".txt"))]
     assert all(c.is_dir() for c in children), "not all children are directories"
 
     # we work under the assumption that the newer backups are a superset of the old ones and treat the
